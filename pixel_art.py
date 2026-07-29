@@ -43,13 +43,15 @@ def make_frames(img, count= 4, amp = 0.06):
     return frames
 
 def build_spritesheet(frames):
-    
+    w, h = frames[0].size
+    canvas = Image.new('RGBA', (w*len(frames), h))
+    for i, frame in enumerate(frames):
+        canvas.paste(frame, (i*w, 0))
+    return canvas
 
 orig_img = ImageOps.exif_transpose(Image.open("input/funtik.jpg"))
 sprite = quantize(pixelate(find_subject(orig_img)))
 frames = make_frames(sprite)
-print(len(frames), frames[0].size)
+sheet = build_spritesheet(frames)
 
-for i, f in enumerate(frames):
-    preview(f).save(f'output/frame{i}.png')
-#res.save('output/funtik.png')
+sheet.save('output/spritesheet.png')
