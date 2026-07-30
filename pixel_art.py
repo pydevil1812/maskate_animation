@@ -1,10 +1,15 @@
 from PIL import Image, ImageOps
 from rembg import remove
 import math
-def pixelate(img, size = 64):
+SIZE = 64
+
+def pixelate(img, size = SIZE):
     w, h = img.size
-    small_w = round(size*(h/w))
-    small_img = img.resize((size, small_w), Image.Resampling.LANCZOS)
+    if w>= h:
+        new_w, new_h = size, round(size*h / w)
+    else:
+        new_w, new_h = round(size*w / h), size
+    small_img = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
     return small_img
 def preview(img, scale = 8):
     w, h = img.size
@@ -25,19 +30,18 @@ def quantize(img, colors = 16):
     img.putalpha(alpha)
     return img
 
-def make_frames(img, count= 4, amp = 0.06):
+def make_frames(img, count= 4, amp = 0.06, size = SIZE):
     frames = []
     w, h = img.size
-    cw = round(w *(1+amp))
-    ch = round(h *(1+amp))
     for i in range(count):
         phase = 2*math.pi * i /count
         sx = 1+amp*math.sin(phase)
         sy = 1-amp*math.sin(phase)
         scaled = img.resize((round(w*sx), round(h*sy)), Image.Resampling.NEAREST)
-        canvas = Image.new("RGBA", (cw, ch), (0, 0, 0, 0))
-        x = (cw-scaled.width)//2
-        y = ch - scaled.height
+        cell = round(size*(1+amp))
+        canvas = Image.new("RGBA", (cell, cell), (0, 0, 0, 0))
+        x = (cell-scaled.width)//2
+        y = cell - scaled.height
         canvas.paste(scaled, (x, y), scaled)
         frames.append(canvas)
     return frames

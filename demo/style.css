@@ -1,0 +1,32 @@
+:root {
+  --cell:  68;
+  --count:  4;
+  --scale:  8;
+}
+
+body {
+  background: #1a1a1a;
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.mascot {
+  width:  calc(var(--cell) * var(--scale) * 1px);
+  height: calc(var(--cell) * var(--scale) * 1px);
+
+  background-image: url('../output/spritesheet.png');
+  background-size: calc(var(--cell) * var(--count) * var(--scale) * 1px)
+                   calc(var(--cell) * var(--scale) * 1px);
+  background-repeat: no-repeat;
+
+  image-rendering: pixelated;
+
+  animation: play 0.6s steps(4) infinite;
+}
+
+@keyframes play {
+  from { background-position: 0 0; }
+  to   { background-position: calc(var(--cell) * var(--count) * var(--scale) * -1px) 0; }
+}
